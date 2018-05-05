@@ -1,8 +1,7 @@
-import math
+import numpy as np
 def ratio(beta, theta, ax2):
-    pi = math.pi
-    tanth2 = math.tan(theta*pi/180.)**2
-    costh2 = math.cos(theta*pi/180.)**2
+    tanth2 = np.tan(theta*np.pi/180.)**2
+    costh2 = np.cos(theta*np.pi/180.)**2
     gamma = 5./3.
 
     x1 = ax2*( (gamma-1.)/gamma * ( (gamma+1.)/(gamma-1.) - tanth2 ) * \
@@ -12,7 +11,7 @@ def ratio(beta, theta, ax2):
 
     return x1/x2
 
-def bysection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
+def bisection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
     # mode => 1: fast mode, 2: intermediate mode 3: slow mode
     if mode != 2:
         if mode == 3:
@@ -20,7 +19,7 @@ def bysection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
             x2 = 1.0
         elif mode == 1:
             x1 = 1.0 + xacc
-            x2 = 1.d+10
+            x2 = 1.e+10
 
         for j in range(iteration):
             f2 = ratio(beta, theta, x2) - x2
@@ -34,7 +33,7 @@ def bysection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
                 x1 = xmid
             else:
                 x2 = xmid
-            if math.abs(fmid) < xacc:
+            if np.absolute(fmid) < xacc:
                 return xmid
     else:
         x1 = 0.0
@@ -51,6 +50,6 @@ def bysection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
                 x1 = xmid
             else:
                 x2 = xmid
-            if math.abs(fmid) < xacc:
+            if np.absolute(fmid) < xacc:
                 return xmid
     print('lack of iteration!!')
