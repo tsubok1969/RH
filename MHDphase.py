@@ -2,16 +2,16 @@ import numpy as np
 
 class MHDphase:
     def __init__(self, beta, theta, xacc=1.e-6):
+        # mf: fast Mach number, ms: slow Mach number, mi: another branch of Alfven Mach number
+        # normalized by normal Alfven velocity 
         self.beta = beta
         self.theta = theta
-        self.vf = self.rhsol(1.0+xacc, 1.e+10)
-        self.vs = self.rhsol(0.0, 1.0-xacc)
-        self.vi = self.rhsol(0.0, 1.0, alf_mode=True)
-
-    def man(self, ma):
-        return ma / np.cos(self.theta*np.pi/180.)
+        self.mf = np.sqrt(self.rhsol(1.0+xacc, 1.e+10))
+        self.ms = np.sqrt(self.rhsol(0.0, 1.0-xacc))
+        self.mi = np.sqrt(self.rhsol(0.0, 1.0, alf_mode=True))
 
     def ax1(self, ax2):
+        # determine the square of the upstream Alfven Mach number from that in the downstream
         beta = self.beta
         theta = self.theta
         tanth2 = np.tan(theta*np.pi/180.)**2
@@ -30,11 +30,11 @@ class MHDphase:
         theta = self.theta
         for j in range(iteration):
             if(alf_mode):
-                x1ref = x1
-                x2ref = x2
-            else:
                 x1ref = 1.0
                 x2ref = 1.0
+            else:
+                x1ref = x1
+                x2ref = x2
             f2 = self.ax1(x2) - x2ref
             f1 = self.ax1(x1) - x1ref
             if f1*f2 > 0:
@@ -54,3 +54,13 @@ class MHDphase:
                 return xmid
         print('lack of iteration')
 
+    def critical_Alfven(self, step = 1.e-5):
+        ymax = -1.e+10
+        x = self.ms
+        while x < 1.0:
+            y = self.ax1(x)
+            if y > ymax:
+                xmax = x
+                ymax = y
+            x = x + step
+        return xmax
