@@ -53,3 +53,4 @@ def bisection(beta, theta, ax2, mode, xacc=1.e-6, iteration=100):
             if np.absolute(fmid) < xacc:
                 return xmid
     print('lack of iteration!!')
+
